@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.7.1 スーパークラスを格納する & 6.7.2 コンストラクタのポインタを再設定する</title>
+</head>
+<body>
+<script>
+  var inherit = (function(){
+    var F = function () {};
+    return function (C, P) {
+      F.prototype = P.prototype;
+      C.prototype = new F();
+      C.uber = P.prototype;			// スーパークラスを格納する
+      C.prototype.constructor = C;	// コンストラクタのポインタを再設定する
+    };
+  }());
+
+  function Parent (name) {
+    this.name = name || 'Adam';
+  }
+  Parent.prototype.say = function () {
+    return this.name;
+  }
+  Parent.value = 1;
+  function Child (name) {
+    Parent.apply(this, arguments);
+    // Parent.call(this); // 引数が無い場合はこちらでもOK
+  }
+  inherit(Child, Parent);
+  Child.prototype.say = function () {
+    return this.name + '. New!!';
+  }
+  Child.prototype.pSay = function () {
+    // スーパークラスのメソッドを実行する
+    return Child.uber.say.call(this);
+  }
+
+  var kid = new Child('Eve');
+  console.log( kid.constructor.name );       // "Child"
+  console.log( kid.constructor === Parent ); // "false"
+  console.dir( kid );
+  console.log( kid.say(), kid.pSay() );      // "Eve. New!!" "Eve"
+</script>
+</body>
+</html>

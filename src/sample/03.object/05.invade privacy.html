@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.3.3 プライバシーの侵害</title>
+</head>
+<body>
+<script>
+  function Gatget () {
+    // プライベートメンバ
+    var specs = {
+      width  : 320,
+      height : 480,
+      color  : "white"
+    };
+    // パブリックメンバ
+    this.getSpecs = function () {
+      return specs; // プライベートメンバを返すのが問題！！
+    };
+  }
+
+  var toy = new Gatget(),
+    specs = toy.getSpecs();
+
+  // プライベートメンバが参照代入で戻り値となっているので加工できる
+  specs.color = "black";
+  specs.price = "free";
+
+  // 外部から加工されてしまった結果を確認
+  console.log(toy.getSpecs());
+
+  /**
+   * [対策]
+   * ・プライベートメンバにしておきたいオブジェクトや配列に対する参照を渡さないように注意する
+   * ・getSpecs()が返す新しいオブジェクトに含めるデータをそのオブジェクトの利用者に関心あるデータだけに限定する
+   *   ※POLA ( Principle Of Least Authority: 最小権限の原則 )
+   * ・参照を渡す代わりに、汎用のオブジェクト複製関数を使って、コピーを作成するアプリローチもあります。
+   */
+</script>
+</body>
+</html>

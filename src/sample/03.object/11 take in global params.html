@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>5.4.3 グローバル変数をモジュールに取り込む</title>
+</head>
+<body>
+<script>
+  MYAPP.utilities.module = (function (app, global) {
+    // グローバルオブジェクトへの参照と
+    // グローバル名前空間オブジェクトへの参照がここでローカルになる
+  }(MYAPP, this));
+</script>
+</body>
+</html>

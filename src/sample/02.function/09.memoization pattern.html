@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>関数プロパティによるメモ化パターン</title>
+</head>
+  <body>
+  <script>
+    // どのような構文で作られたかに関わらず、ある関数が期待する引数の数を示す
+    // lengthプロパティが自動で付与される。
+    function func (a, b, c) {}
+    console.log(func.length);
+  
+    // いつでも関数にカスタムのプロパティを追加できます。
+    // 関数の結果（戻り値）をキャッシュ化するのは、カスタムプロパティの用途の一つです。
+    // 関数の結果をキャッシュすることを、メモ化（memoization）とも言います。
+  
+    var myFunc = function () {
+      var cacheKey = JSON.stringify(Array.prototype.slice.call(arguments)),
+        result;
+  
+      if ( ! myFunc.cache[cacheKey]) {
+        result = {};
+        // 重たい処理...
+        myFunc.cache[cacheKey] = result;
+      }
+      return myFunc.cache[cacheKey];
+    };
+  
+    // キャッシュの記憶領域
+    myFunc.cache = {};
+  
+    // 実際の実行例
+    myFunc(0, 2);
+    myFunc(1, 2);
+    console.log(myFunc.cache);
+  </script>
+</body>
+</html>

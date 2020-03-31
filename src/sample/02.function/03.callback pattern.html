@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>コールバックパターン</title>
+</head>
+<body>
+  <script>
+    function writeCode (callback) {
+      // 何か処理をする
+      callback();
+    }
+    function introduceBugs () {
+      // ...バグを作る
+    }
+    writeCode (introduceBugs);
+  
+    var findNodes = function (object, callback) {
+      var i = 100000, // 果てしないループ
+        nodes = [], // ここに結果を格納
+        found       // 次のノード
+  
+      // nodeを定義
+      found = {style:{color:""}};
+  
+      // ここでコールバック：
+      if (typeof callback === "string") {
+        callback = object[callback];
+      }
+  
+      while (i) {
+        i -= 1;
+  
+        // 複雑なロジック...
+  
+        // ここでコールバック：
+        if (typeof callback === "function") {
+          callback.call(object, found);
+        }
+  
+        nodes.push(found);
+      }
+      return nodes;
+    };
+    var myapp = {
+      color: "green",
+      paint: function (node) {
+        node.style.color = this.color;
+      }
+    };
+  
+    // ノードを見つけたら隠す
+    var res = findNodes(myapp, "paint");
+    console.log(res.length, res[0].style.color);
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.4.2 コンストラクタを作成するモジュール</title>
+</head>
+<body>
+<script>
+  var MYAPP = MYAPP || {};
+
+  /**
+   * myApp.modules.module1を定義しようとすると、定義しようとするオブジェクトやプロパティごとに
+   * チェックが必要になるので、合計で3つのチェックが必要になります。
+   * このため、名前空間を作成する際の詳細を引き受ける再利用可能な関数を用意すると便利です。
+   *
+   * @param	{string}  ns_string
+   * @param	{boolean} checkExists
+   * @return	object
+   */
+  MYAPP.namespace = function (ns_string, checkExists) {
+    var parts = ns_string.split('.'),
+      parent = MYAPP,
+      i, max, last;
+
+    // 先頭の冗長なグローバルを取り除く
+    if (parts[0] === "MYAPP") {
+      parts = parts.slice(1);
+    }
+
+    max = parts.length;
+    last = (max > 0) ? max - 1 : 0;
+    for (i = 0; i < max; i += 1) {
+      // プロパティが存在しなければ作成する
+      if (typeof parent[parts[i]] === "undefined") {
+        parent[parts[i]] = {};
+      } else if (last === i && checkExists === true){
+        throw new Error('作成失敗：「' + parts[i] + '」はすでに存在します');
+      }
+      parent = parent[parts[i]];
+    }
+    return parent;
+  }
+
+  // モジュールパターン
+  MYAPP.namespace('MYAPP.utilities.Array', true);
+  MYAPP.utilities.Array = (function() {
+    // 依存関係を宣言
+    var uobj = MYAPP.utilities.object,
+      ulang = MYAPP.utilities.lang,
+
+      // プライベートのプロパティとメソッド
+      Constr;
+
+    // パブリックAPI -- コンストラクタ
+    Constr = function(o) {
+      this.elements = this.toArray(o);
+    };
+
+    // パブリックAPI -- プロトタイプ
+    Constr.prototype = {
+      constructor: MYAPP.utilities.Array,
+      version: "2.0",
+      toArray: function (obj) {
+        for (var i = 0, a = [], len = obj.length; i < len; i += 1) {
+          a[i] = obj[i];
+        }
+        return a;
+      }
+    };
+
+    // 新しい名前空間に代入されたコンストラクタを返す
+    return Constr;
+  }());
+
+  var arr1 = new MYAPP.utilities.Array("test1");
+  var arr2 = new MYAPP.utilities.Array("test2");
+  console.log(arr1, arr2);
+</script>
+
+</body>
+</html>

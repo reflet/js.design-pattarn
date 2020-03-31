@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.2 依存関係の宣言</title>
+</head>
+<body>
+<script>
+  /**
+   * コードが依存するモジュールを関数やモジュールの冒頭で宣言しておくのは良いやり方です。
+   *
+   * [利点]
+   * ・依存関係を明示することで、利用者に取り込む必要のあるスクリプトファイルを知らせることができる。
+   * ・関数の冒頭で宣言しておけば、依存関係を見つけ出し、それを解決するのが容易になる。
+   * ・ローカル変数を使って処理すると、グローバルやグローバル変数のプロパティの入れ子を使うより処理が高速なので、性能が向上する。
+   *   依存関係宣言パターンに従えば、グローバルシンボルの解決はこの関数の中で１回きり実行されるだけです。
+   *   ローカル変数に代入された後は、さらに高速になります。
+   * ・YUICompressorやGoogleClosureCompilerなどのミニファイツールはローカル変数の名前を変更します。
+   *   このため、eventがaのようなたった1文字になることもあります。
+   *   この結果、コードは小さくなりますが、グローバル変数の名前を変更するのは安全ではないので、グローバル変数の名前は変更されません。
+   *
+   * 次のコードは、依存関係宣言パターンに従うコードをミニファイしたときの効果を示します。
+   * test2()はこのパターンに従っています。
+   * 数行のコードと余分な変数を必要とするので、少し複雑に見えますが、ミニファイを施すと実際のコードは小さくなります。
+   * つまりユーザがダウンロードするコードも少なくてすみます。
+   */
+
+  var myApp = {modules: {m1 : '', m2 : '', m51: ''}};
+
+  function test1 () {
+    alert(myApp.modules.m1);
+    alert(myApp.modules.m2);
+    alert(myApp.modules.m51);
+  }
+  /**
+   * test1をミニファイすると
+   * alert(myApp.modules.m1);alert(myApp.modules.m2);alert(myApp.modules.m51)
+   */
+
+  function test2 () {
+    var modules = myApp.modules;
+    alert(modules.m1);
+    alert(modules.m2);
+    alert(modules.m51);
+  }
+  /**
+   * test2をミニファイすると
+   * var a=myApp.modules;alert(a.m1);alert(a.m2);alert(a.m51)
+   */
+</script>
+</body>
+</html>

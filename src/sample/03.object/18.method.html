@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.9 method()メソッド</title>
+</head>
+<body>
+<script>
+  /**
+   * 	method()メソッド
+   *
+   * 	※コンストラクタ関数の内部のthisにインスタンスのプロパティを追加することもできます。
+   * 	 しかし、thisにメソッドを追加するのは、インスタンスごとにメソッドが再作成され、
+   * 	 それだけメモリを消費するので非効率です。
+   * 	 再利用可能なメソッドをコンストラクタのprototypeプロパティに追加すべきなのはこのためです。
+   * 	 多くの開発者にとってprototypeは宇宙人のように見えるかもしれませんのでこれを隠すことができます。
+   *
+   * 	 ※ある言語に簡便な機能を追加することを「シンタックスシュガー」あるいはもっと簡単に「シュガー」と言います。
+   * 	  この場合、method()メソッドを「シュガーメソッド」と呼ぶことができるでしょう。
+   */
+  if (typeof Function.prototype.method != "function") {
+    /**
+     * method関数
+     * @param  {String}   name            … 新しいメソッドの名前
+     * @param  {Function} implementation  … メソッドの実装
+     * @return this
+     */
+    Function.prototype.method = function (name, implementation) {
+      this.prototype[name] = implementation;
+      return this;
+    }
+  }
+
+  // method()メソッドを使ってPersonコンストラクタ関数を定義する
+  var Person = function (name) {
+    this.name = name;
+  }
+    .method('getName', function () {
+      return this.name;
+    })
+    .method('setName', function (name) {
+      this.name = name;
+      return this;
+    });
+
+  var a = new Person('Adam');
+  console.log( a.getName() ); // "Adam"
+  console.log( a.setName('Eve').getName() ); // "Eve"
+</script>
+</body>
+</html>

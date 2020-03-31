@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.7 オブジェクト定数</title>
+</head>
+<body>
+<script>
+  var constant = (function(){
+    var constants = {},
+      ownProp = Object.prototype.hasOwnProperty,
+      allowed = {
+        string : 1,
+        number : 1,
+        boolean: 1
+      },
+      prefix = (Math.random() + " ").slice(2);
+    return {
+      isDefined: function (name) {
+        return ownProp.call(constants, prefix + name);
+      },
+      set: function (name, value) {
+        if (this.isDefined(name)) {
+          throw new Error("定義済みの定数です ( " + name + " )");
+        }
+        if ( ! ownProp.call(allowed, typeof value)) {
+          throw new Error("許可されていない型です ( " + typeof value + " )")
+        }
+
+        // 組み込みプロパテイと重複しないようにプレフィックスを追加する
+        constants[prefix + name] = value;
+        return true;
+      },
+      get: function (name) {
+        if (this.isDefined(name)) {
+          return constants[prefix + name];
+        }
+        return null;
+      }
+    };
+  }());
+
+  // 定数が定義されているか？
+  console.log( constant.isDefined("maxwidth") );
+
+  // 定義する
+  console.log( constant.set("maxwidth", 480) );
+
+  // 再検査
+  console.log( constant.isDefined("maxwidth") );
+
+  // 値が元のままか？
+  console.log( constant.get("maxwidth") );
+
+  // 再定義してみる -> エラーになる
+  // console.log( constant.set("maxwidth", 320) );
+
+  // 許可されていない型を定義する -> エラーになる
+  // console.log( constant.set("maxhtight", {}) );
+</script>
+</body>
+</html>

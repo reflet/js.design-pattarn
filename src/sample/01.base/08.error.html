@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>エラー</title>
+</head>
+<body>
+  <script>
+    // 通常の例外処理
+    // throw new Error('test');
+    // throw new SyntaxError('test2');
+    // throw new TypeError('test3');
+  
+    /**
+     * 共通のエラー処理
+     */
+    function genericErrorHandler() {
+      console.log('error.');
+      throw new Error('独自エラー処理だよ');
+    }
+  
+    /**
+     * 独自エラー処理を実装例
+     */
+    try {
+      // 何か異常が発生したのでエラーを投げます
+      throw {
+        name: "MyErrorType",
+        message: "oops",
+        extra: "This was rather embarrassing",
+        remedy: genericErrorHandler //これを処理するハンドラ
+      };
+    } catch (e) {
+      // ユーザー通知
+      alert(e.message);
+  
+      // エラーを優雅に処理
+      e.remedy(); // genericErrorhandler()を呼びます
+    }
+  </script>
+</body>
+</html>

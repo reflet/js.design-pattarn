@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>配列</title>
+</head>
+<body>
+  <script>
+    (function() {
+      /**
+       * 配列リテラル
+       */
+      var a = ['itsy', 'bitsy', 'spider'];
+      console.log(
+        typeof a,
+        a.constructor === Array
+      );
+  
+      /**
+       * 配列かどうかのチェック
+       * ※ECMAScript5のArray.isArray()メソッドを使う。
+       * ※対応していないブラウザへの対応を記述する。
+       */
+      if (typeof Array.isArray === 'undefined') {
+        Array.isArray = function (arg) {
+          return Object.prototype.toString.call(arg) === '[object Array]';
+        };
+      }
+      console.log(Array.isArray(['itsy', 'bitsy', 'spider']));
+    })();
+  </script>
+</body>
+</html>
+
+

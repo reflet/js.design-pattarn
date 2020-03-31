@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>即時関数（自己呼び出し関数、自己実行関数）</title>
+</head>
+<body>
+  <script>
+    // パターン1 ※JSLintはこちらを推奨しているらしい。
+    (function () {
+      console.log('watch out!');
+    }());
+  
+    // パターン2
+    (function () {
+      console.log('watch out!');
+    })();
+  
+    /**
+     * サンプル
+     * ※即時関数で囲むことで、グローバルスコープに変数が漏れないようにする。
+     */
+    (function () {
+      var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        today = new Date(),
+        msg = 'Today is ' + days[today.getDay()] + ', ' + today.getDate();
+  
+      console.log(msg);
+    }()); // "Today is Fri, 13"
+  
+    /**
+     * 即時関数のパラメータ
+     */
+    (function (who, when) {
+      console.log("I met " + who + " on " + when);
+    }("Joe Black", new Date()));
+  
+    /**
+     * 一般に、即時関数の引数には、グローバルオブジェクトを渡します。
+     * そうすれば、windowを使わずに関数の内部からアクセスできるからです。
+     * これによってブラウザ以外の環境でコードの相互運用性が向上します。
+     */
+    (function (global) {
+      // globalを介してグローバルオブジェクトにアクセス
+    }(this));
+  
+    /**
+     * 即時関数からの戻り値
+     */
+    var result = (function () {
+      return 2 + 2;
+    }());
+    console.log(result);
+  
+    var result = (function () {
+      return 2 + 2;
+    })();
+    console.log(result);
+  
+    /**
+     * 即時関数からの戻り値（非推奨）
+     * ※全体を囲む（）が無くてもOK
+     */
+    var result = function(){
+      return 2 + 2;
+    }();
+    console.log(result);
+  
+    /**
+     * 即時関数からの戻り値（関数版）
+     */
+    var getResult = (function () {
+      var res = 2 + 2;
+      return function () {
+        return res;
+      };
+    }());
+    console.log(getResult());
+  
+    /**
+     * 即時関数を使った実装例
+     */
+    var o = {
+      message: (function () {
+        var who = "me",
+          what = "call";
+        return what + " " + who;
+      }()),
+      getMsg: function () {
+        return this.message;
+      }
+    }
+    console.log(o.getMsg()); // "call me"
+    console.log(o.message);  // "call me"
+  
+    /**
+     * 即時オブジェクト初期化
+     * ※ただし、ミニファイするとき、コードを関数で包んだだけの場合と同じようには効率的に処理しません。
+     *  プライベートのプロパティとメソッドは、ミニファイの視点からは短縮名に変更しても安全なものとは見なせないからです。
+     *
+     *  minify後のコード例)
+     *  ({d:600,c:400,a:function(){return this.d+"x"+this.c},b:function(){console.log(this.a())}}).b();
+     */
+    ({
+      // 定数を設定しています。
+      maxWidth : 600,
+      maxHeight: 400,
+  
+      // ユーティリティメソッドも定義できます。
+      gimmeMax : function () {
+        return this.maxWidth + " x " + this.maxHeight;
+      },
+  
+      // 初期化
+      init     : function () {
+        console.log(this.gimmeMax());
+        return this;
+      }
+    }).init();
+  
+    ({d:600,c:400,a:function(){return this.d+"x"+this.c},b:function(){console.log(this.a());return this;}}).b();
+  </script>
+</body>
+</html>

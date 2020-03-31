@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.7 クラシカルなパターンその5：一時的なコンストラクタ</title>
+</head>
+<body>
+<script>
+  // 親コンストラクタがthisに追加した固有プロパティは一切継承されません。
+  function ihherit(C, P) {
+    var F = function () {};
+    F.prototype = P.prototype;
+    C.prototype = new F();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>JSON</title>
+</head>
+<body>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script> -->
+  <!-- <script-- src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>
+    // JSONデータを入力
+    var jstr = '{"myKey":"My Value."}';
+  
+    // アンチパターン
+    var data1 = eval('(' + jstr + ')');
+  
+    // 推奨パターン
+    var data2 = JSON.parse(jstr);
+  
+    // JQueryパターン
+    var data3 = jQuery.parseJSON(jstr);
+  
+    console.log(data1, data2, data3);
+  
+  
+    var dog = {
+      name:"Fido",
+      dob: new Date(),
+      legs:[1,2,3,4]
+    };
+  
+    var jsonstr = JSON.stringify(dog);
+  
+    console.log(jsonstr);
+  </script>
+</body>
+</html>

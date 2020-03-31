@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.3.1 プライベートメンバ と 5.3.2 特権メソッド</title>
+</head>
+<body>
+<script>
+  // オブジェクトは全てパブリックになります。
+  var myObj = {
+    myProp  : 1,
+    getProp : function () {
+      return this.myProp;
+    }
+  };
+  console.log(myObj.myProp);
+  console.log(myObj.getProp());
+
+  // コンストラクタ関数を使ってオブジェクトを作成した時も同様です。
+  function GadGet () {
+    this.name = "iPod";
+    this.stretch = function () {
+      return "iPod";
+    };
+  }
+  var toy = new GadGet();
+  console.log(toy.name);
+  console.log(toy.stretch());
+
+  // プライベートメンバ
+  function private() {
+    // プライベートメンバ
+    var name = "iPod";
+    // パブリックメンバ
+    this.getName = function () {
+      return name;
+    };
+  }
+  var toy = new private();
+  console.log(toy.name); // 直接アクセスはできません。
+  console.log(toy.getName()); // パブリックメンバはnameへアクセス可能。
+
+  /**
+   * 特権メソッド
+   * ※プライベートメンバへアクセス可能（つまり特権がある）なパブリックメソッドのこと
+   * ※前のprivate()関数でいうと、getName()メソッドが該当します。
+   */
+</script>
+</body>
+</html>

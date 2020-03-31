@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.11 ミックスイン</title>
+</head>
+<body>
+<script>
+  /**
+   * ミックスイン
+   *
+   * ※複数のオブジェクトからコピーし、それらを混ぜ合わせて新しいオブジェクトを作成することができます。
+   */
+  var mix = function () {
+    var arg, prop, child = {};
+    for (arg = 0; arg < arguments.length; arg += 1) {
+      for (prop in arguments[arg]) {
+        if (arguments[arg].hasOwnProperty(prop)) {
+          child[prop] = arguments[arg][prop];
+        }
+      }
+    }
+    return child;
+  };
+
+  var rows = {counts:[1,2,3,4]};
+  var cake = mix(
+    {eggs:2, large: true},
+    {butter:1, salted: true},
+    {flour: "3 cups"},
+    {sugar: "sure!"},
+    rows
+  );
+  cake.counts.push(5);
+  console.log( cake, rows );
+</script>
+</body>
+</html>

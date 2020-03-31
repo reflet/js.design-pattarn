@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>5.3.6 プライベート関数をパブリックメソッドとして開示する</title>
+</head>
+<body>
+<script>
+  /**
+   * モジュール開示パターン - revealing module pattern -
+   *
+   * ※できるだけ保護したいが、いくつかの便利な機能については、パブリックなアクセスを
+   *   提供したいといった場合に役に立つパターンです。
+   *
+   * ※ECMAScript5にはオブジェクトを凍結する選択肢がありますが、
+   *   それ以前のバージョンにはないため、使われる。
+   */
+  var myArray;
+  (function () {
+    var arrayStr = "[object Array]",
+      toString = Object.prototype.toString;
+
+    function isArray(a) {
+      return toString.call(a) === arrayStr;
+    }
+
+    function indexOf (haystack, needle) {
+      var i, max = haystack.length;
+      for (i = 0; i < max; i +=1) {
+        if (haystack[i] === needle) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    function inArray (haystack, needle) {
+      return (indexOf(haystack, needle) >= 0) ? true : false;
+    }
+
+    myArray = {
+      isArray: isArray,
+      indexOf: indexOf,
+      inArray: inArray
+    }
+
+    // 実行テスト
+    console.log(myArray.isArray([1,2])); // true
+    console.log(myArray.isArray({0:1})); // false
+    console.log(myArray.indexOf(["a", "b", "z"], "z")); // 2
+    console.log(myArray.inArray(["a", "b", "z"], "z")); // true
+
+    //
+    myArray.indexOf = null;
+    console.log(myArray.inArray(["a", "b", "c", "z"], "z")); // true
+    console.log(myArray.indexOf(["a", "b", "c", "z"], "z")); // "Uncaught TypeError: myArray.indexOf is not a function"
+  }());
+</script>
+</body>
+</html>

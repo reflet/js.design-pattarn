@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.9 プロトタイプによる継承</title>
+</head>
+<body>
+<script>
+  var Object = function (o) {
+    function F() {}
+    F.prototype = o;
+    return new F();
+  }
+
+  // 継承元のオブジェクト
+  var Person = function () {
+    this.name = 'Adam'
+  };
+  Person.prototype.getName = function () {
+    return this.name;
+  }
+
+  // 新規作成
+  var Papa = new Person();
+  console.log( Papa.name ); // "Adam"
+
+  // 継承
+  var kid  = Object(Papa);
+
+  // 固有のプロパティとプロトタイププロパティの両方が継承される
+  console.log( kid.getName() ); // "Adam"
+
+</script>
+</body>
+</html>

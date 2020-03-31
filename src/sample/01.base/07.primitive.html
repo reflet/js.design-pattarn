@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>プリミティブ</title>
+</head>
+<body>
+  <script>
+    // プリミティブ文字列は、オブジェクトとして使われる
+    var s = "hello";
+    console.log(s.toUpperCase());
+  
+    // この値はオブジェクトとして振る舞うことができます。
+    console.log("monkey".slice(3,6));
+  
+    // 数値についても同様です。
+    console.log((22 / 7).toPrecision(3));
+  
+    // 以下は避ける
+    var s = new String("hi");
+    var n = new Number(101);
+    var b = new Boolean(true);
+  
+    // 簡潔でより良い書き方
+    var s = "hi";
+    var n = 101;
+    var b = true;
+  
+  
+    // プリミティブ文字列
+    var greet = "Hello there.";
+  
+    // split()メソッドを使うので
+    // プリミティブはオブジェクトに変換される
+    console.log(greet.split(' ')[0]);
+  
+    // プリミティブを拡張しようとしてもエラーにならない
+    greet.smile = true;
+  
+    // しかし、実際には動作しません。
+    console.log(typeof greet.smile);
+  
+    /**
+     * [注意点]
+     * 文字列、数値、論理値を拡張して使うことは稀なので、拡張が必要ない限り、
+     * ラッパーコンストラクタを使う必要はおそらくありません。
+     */
+  
+    // ラッパーコンストラクタをnewなしで使うと、渡された引数をプリミティブ値に変換されてしまう。
+    console.log(typeof Number(1));
+    console.log(typeof Number("1"));
+    console.log(typeof new Number());
+    console.log(typeof Number(new Number()));
+    console.log(typeof String("1"));
+    console.log(typeof new String("1"));
+    console.log(typeof Boolean(1));
+    console.log(typeof new Boolean(1));
+  </script>
+</body>
+</html>

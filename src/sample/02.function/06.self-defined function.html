@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>自己定義関数（遅延関数定義）</title>
+</head>
+<body>
+  <script>
+    /**
+     * 自己定義関数サンプル
+     * ※このパターンは、「遅延関数定義」とも言います。
+     *   関数が最初に使われる時点まで、この関数の定義は不完全で、本来の仕事をさぼっている怠けものだからです。
+     */
+    var scareMe = function () {
+      alert("Boo!");
+      scareMe = function () {
+        alert("Double Boo!");
+      }
+    };
+  
+    // 1.新しいプロパティを追加
+    scareMe.property = "properly";
+  
+    // 1.5 自己定営関数を使う ※代入の前に実行すると以下の結果が違ってくる
+    //scareMe(); // "Boo!"
+    //scareMe(); // "Double Boo!"
+    //console.log(scareMe.property); // "properly"
+  
+    // 2.別の名前に代入
+    var prank = scareMe;
+  
+    // 3.メソッドとして使う
+    var spooky = {
+      boo: scareMe
+    };
+  
+    // 新しい名前で呼ぶ
+    prank(); // "Boo!"
+    prank(); // "Boo!"
+    console.log(prank.property); // "properly"
+  
+    // メソッドとして呼ぶ
+    spooky.boo(); // "Boo!"
+    spooky.boo(); // "Boo!"
+    console.log(spooky.boo.property); // "properly"
+  
+    // 自己定営関数を使う
+    scareMe(); // "Double Boo!"
+    scareMe(); // "Double Boo!"
+    console.log(scareMe.property); // "properly"
+  </script>
+</body>
+</html>

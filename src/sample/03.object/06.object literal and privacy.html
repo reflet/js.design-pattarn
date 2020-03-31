@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.3.4 オブジェクトリテラルとプライバシー</title>
+</head>
+<body>
+<script>
+  // オブジェクトリテラルの場合、無名即時関数が作成するクロージャーを使うことができます。
+  var myObj;
+  (function () {
+    // プライベートメンバ
+    var name = "my, oh my";
+
+    // パブリックな部分の実装
+    // varがない点に注意
+    myObj = {
+      // 特権メソッド
+      getName: function () {
+        return name;
+      }
+    };
+  }());
+  console.log(myObj.getName()); // "my, oh my"
+
+  // 同じ考え方で少し実装方法を変えたものを示します。
+  var myObj = (function () {
+    // プライベートメンバ
+    var name = "my, oh my";
+    // パブリックな部分の実装
+    return {
+      getName: function () {
+        return name;
+      }
+    };
+  }());
+  console.log(myObj.getName()); // "my, oh my"
+</script>
+</body>
+</html>

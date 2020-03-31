@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.12 メソッドを拝借する</title>
+</head>
+<body>
+<script>
+  /**
+   * ----------------------------------------------------------------------
+   * メソッド拝借パターン
+   * ----------------------------------------------------------------------
+   * 既存のオブジェクトのうち、そのひとつかふたつだけ再利用したいけれども、
+   * そのオブジェクトとの親子関係は作りたくないことがあります。
+   *
+   * 必要のないメソッドは継承せずに必要なメソッドだけ使いたい時に有効です。
+   * このパターンは、関数メソッドcall(), apply() の利点を使います。
+   *
+   * ・call()
+   * 　一つ一つ別々のパラメータで渡されたメソッドが呼ばれます
+   *
+   * ・apply()
+   * 　パラメータを配列でまとめて渡されたメソッドが呼ばれます
+   */
+
+  var myobj    = {};
+  var notmyobj = {
+    results: 0,
+    doStuff: function (param1, p2, p3){ this.resutls = param1 + p2 + p3; }
+  };
+
+  // call()の例
+  notmyobj.doStuff.call(myobj, 1, 2, 3);
+  console.log( myobj );
+
+  // apply()の例
+  notmyobj.doStuff.apply(myobj, [2, 3, 4]);
+  console.log( myobj );
+
+  /**
+   * ----------------------------------------------------------------------
+   * 配列から拝借する
+   * ----------------------------------------------------------------------
+   * ※配列には便利なメソッドがありますが、argumentsなどの配列ライクなオブジェクトにはそれがありません。
+   * 　そこでargumentsはslice()などの配列メソッドを拝借できるようにするのです。
+   */
+  var fanc1 = function () {
+    var args = [].slice.call(arguments, 1, 3);
+    return args;
+  };
+  console.log( fanc1(1,2,3,4,5,6) ); // "[2, 3]"
+
+  var fanc2 = function () {
+    // オブジェクトを作成しないからこちらの方がコストが低いかも...
+    var args = Array.prototype.slice.call(arguments, 1, 3);
+    return args;
+  };
+  console.log( fanc2(1,2,3,4,5,6) ); // "[2, 3]"
+
+  /**
+   * ----------------------------------------------------------------------
+   * メソッド拝借パターンの問題点
+   * ----------------------------------------------------------------------
+   * 関数のポインタをグローバル変数に代入した場合、あるいは関数をコールバックとして渡す場合
+   * どうなるでしょう？。
+   *
+   * クライアント側のプログラミングでは、イベントやコールバックがたくさんあるので、
+   * こういった状況は頻繁に発生します。
+   *
+   * ※グローバルもコールバックもどちらのthisはグローバルオブジェクトを指しているので、
+   *  コード全体は期待通りの動作になりません。
+   */
+  var one = {
+    myName: 'object',
+    say: function (greet) { return greet + ', ' + this.myName; }
+  };
+  var two = { myName: 'another object' };
+
+  // 正常テスト
+  console.log( one.say('hi') ); // "hi, object";
+  console.log( one.say.apply(two, ['hello']) ); // "hello, anothor object"
+
+  // 異常テスト（グローバル）
+  var say = one.say;
+  console.log( say('hoho') ); // "hoho, undefined";
+
+  // 異常テスト（コールバック）
+  var yetanother = {
+    myName: 'Yet another object',
+    method: function (callback) {
+      return callback('Holla');
+    }
+  };
+  console.log( yetanother.method(one.say) ); // "Holla, undefined";
+
+  /**
+   * ----------------------------------------------------------------------
+   * 拝借と束縛
+   * ----------------------------------------------------------------------
+   * ※この方法だと、オブジェクトoとオブジェクトmを受け取り、この２つを結合した別の関数を返します。
+   *  返された関数は、クロージャーに閉じ込められたo,mオブジェクトにアクセスできます。
+   *  このため、bind()が返した後でも、この内部関数はoとmにアクセスすることができ、
+   *  どちらも元のオブジェクトとメソッドを指しています。
+   *
+   *  twosay()はグローバル関数として作成されたにも関わらず、thisはグローバルオブジェクトを指さず、
+   *  bind()に渡されたオブジェクトtwoを指しています。
+   *  twosay()の呼び出し方に関係なく、thisは常にtwoに束縛されます。
+   */
+  var bind = function (o, m) {
+    return function () {
+      return m.apply(o, Array.prototype.slice.call(arguments));
+    };
+  };
+
+  // テスト
+  var twosay = bind(two, one.say);
+  console.log( twosay('yo') ); // "yo, another object"
+
+  /**
+   * ----------------------------------------------------------------------
+   * Function.prototype.bind()
+   * ----------------------------------------------------------------------
+   * ※ECMAScript5では、Function.prototypeにメソッドbind()が追加され、
+   *  apply()やcall()と同じように簡単に使えます。
+   */
+  var myobj = {};
+  var obj = {someFunc: function(a, b, c) { return a + b + c; }};
+  var newFunc = obj.someFunc.bind(myobj, 1, 2, 3);
+
+  // ES5以前の環境でもプログラムを実行できるように、Function.prototype.bind()を次のように実装することができます。
+  if (typeof Function.prototype.bind === "undefined") {
+    Function.prototype.bind = function (thisArg) {
+      var fn = this,
+        slice = Array.prototype.slice,
+        args = slice.call(arguments, 1);
+      return function () {
+        // bind時の引数(args)と実行時の引数(arguments)を合算してapply()を実行する
+        return fn.apply(thisArg, args.concat(slice.call(arguments)));
+      };
+    };
+  }
+
+  // bind例)
+  var twosay2 = one.say.bind(two);
+  console.log( twosay2('Bonjour') ); // "Bonjour, another object"
+
+  // 部分適用例）
+  var twosay3 = one.say.bind(two, 'Enchante');
+  console.log( twosay3() ); // "Enchante, another object"
+</script>
+</body>
+</html>

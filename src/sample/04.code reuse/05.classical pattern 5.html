@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.5 クラシカルなパターンその3：プロトタイプを拝借して設定する</title>
+</head>
+<body>
+<script>
+  // 親コンストラクタ
+  function Parent (name) {
+    this.name = name || 'Adam';
+  }
+  Parent.prototype.say = function () {
+    return this.name;
+  }
+
+  // 子コンストラクタ
+  function Child (name) {
+    Parent.apply(this, arguments);
+  }
+  Child.prototype = new Parent();
+
+  // 欠点はnameプロパティが固有プロパティとプロトタイプとで二重に定義されるのが無駄となる
+  var kid = new Child('Patrick');
+  console.log( kid.name );  // "Patrick"
+  console.log( kid.say() ); // "Patrick"
+  delete kid.name
+  console.log( kid.say() ); // "Adam"
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>カリー化</title>
+</head>
+<body>
+  <script>
+    var sayHi = function (who) {
+      return "Hello" + (who ? ", " + who + "!" : "");
+    };
+  
+    // 関数を呼び出し
+    console.log(sayHi());        // "Hello"
+    console.log(sayHi("World")); // "Hello, World!"
+  
+    /**
+     * 関数を適用する
+     * ※純粋な関数プログラミング言語においては、関数は呼び出されるものとしてではなく、
+     *  むしろ適用されるものとして説明されます。
+     *  JavaScriptにおいても同様で、メソッドFunction.prototype.apply()を使って関数を適用することができます。
+     */
+    console.log(sayHi.apply(null, ["World"])); // "Hello, World!"
+  
+    /**
+     * applyには引数が２つあります。
+     * ・１つ目のパラメータ：この関数の内部でthisに束縛されるオブジェクト
+     *                     ※nullの場合は、thisはグローバルオブジェクトを指します
+     *                      あるオブジェクトのメソッドではない関数を呼んだときに起きる動作です。
+     *                     ※関数がオブジェクトのメソッドであるときは、nullを渡してはいけません
+     *                      そのオブジェクトがapplyの第1引数になります。
+     * ・２つ目のパラメータ：引数の配列
+     */
+    var alien = {
+      sayHi: function (who) {
+        console.log(this); // alienオブジェクト
+        return "Hello" + (who ? ", " + who + "!" : "");
+      }
+    };
+    console.log(alien.sayHi("humans"));                // "Hello, humans!"
+    console.log(alien.sayHi.apply(alien, ["humans"])); // "Hello, humans!"
+  
+    // Function.prototypeオブジェクトには、apply()メソッドだけでなくcall()メソッドもあります。
+    // ※call()メソッドは、apply()メソッドのシンタックスシュガーにすぎません。
+    // ※シンタックスシュガーを使った方がいい場合もあります。
+    //   パラメータを一つしか取らない関数については、call()を使えば要素が一つだけの配列を作るより作業が節約できます。
+    console.log(alien.sayHi.call(alien, "humans"));  // "Hello, humans!"
+  
+    /**
+     * カリー化されたadd()メソッド
+     *
+     * @param	{integer} x
+     * @param	{integer} y
+     * @return	{integer}
+     */
+    function add(x, y) {
+      var oldx = x, oldy = y;
+  
+      // 部分適用
+      if (typeof oldy == "undefined") {
+        return function (newy) {
+          return oldx + newy;
+        }
+      }
+  
+      // 完全適用
+      return x + y;
+    }
+  
+    // 動作確認
+    console.log(typeof add(5)); // "function"
+    console.log(add(3)(4)); // "7"
+  
+    // 新しい関数を作成し、格納して使う。
+    var add2000 = add(2000);
+    console.log(add2000(10)); // "2010"
+    console.log(add2000(20)); // "2020"
+    console.log(add2000(30)); // "2030"
+  
+    /**
+     * 汎用のカリー化関数
+     *
+     * @param	{function} fn
+     * @return	{function}
+     */
+    function schonfinkelize(fn) {
+      var slice = Array.prototype.slice,
+        storedArgs = slice.call(arguments, 1);
+      return function () {
+        var newArgs = slice.call(arguments),
+          args = storedArgs.concat(newArgs);
+        return fn.apply(null, args);
+      };
+    }
+  
+    /**
+     * シンプルなaddメソッド
+     *
+     * @param	{integer} x
+     * @param	{integer} y
+     * @return	{integer}
+     */
+    function addSimple(x, y) {
+      return x + y;
+    }
+  
+    // 関数をカリー化して新しい関数にする
+    var newAdd = schonfinkelize(addSimple, 5);
+    console.log(newAdd(4)); //"9"
+    console.log(newAdd(5)); //"10"
+    console.log(newAdd(6)); //"11"
+  
+    // もう一つの呼び方 -- この新しい関数を直接呼ぶ
+    console.log(schonfinkelize(addSimple, 5)(4));
+  
+    // 通常の関数
+    function addSample2(a, b, c, d, e) {
+      return a + b + c + d + e;
+    }
+  
+    // 引数が複数でも動作します
+    console.log(schonfinkelize(addSample2, 1, 2, 3)(5, 5)); // "16"
+  
+    // 2段階のカリー化
+    var addOne = schonfinkelize(addSample2, 1);
+    console.log(addOne(10, 10, 10, 10)); // "41"
+    var addSix = schonfinkelize(addOne, 2, 3);
+    console.log(addSix(5, 5)); // "16"
+  
+    /**
+     * 関数のパターンは以下のカテゴリに分類できます。
+     *
+     * 1. APIパターン
+     *   ※関数のインターフェースを綺麗でより良いものにするのに役立ちます。
+     *
+     *   ・コールバックパターン
+     *   　※関数を引数として渡します。
+     *   ・設定オブジェクト
+     *     ※たくさんの引数を一つの関数で制御するのに役立ちます。
+     *   ・関数を返す
+     *     ※ある関数の戻り値を別の関数にします。
+     *   ・カリー化
+     *     ※既存の関数とその引数の部分リストをもとに新しい関数を作ります。
+     *
+     * 2. 初期化パターン
+     *    ※初期化と設定作業をより綺麗に実行するのに役立ちます。
+     *    ※グローバル名前空間を一時的な変数で汚さない構成にします。
+     *
+     *   ・即時関数
+     *     ※定義されたら即座に実行されます。
+     *   ・即時オブジェクト初期化
+     *     ※初期化作業を無名オブジェクトで構成します。
+     *     ※無名オブジェクトは即座に呼ばれるメソッドを提供します。
+     *   ・初期化時分岐
+     *     ※アプリケーションの動作中に何度も分岐コードを実行するのではなく、初回に実行される時分岐コードを1回だけ実行します。
+     *
+     * 3. 性能パターン
+     *    ※コードの実行速度を向上させます。
+     *
+     *   ・メモ化
+     *     ※計算値が何度も繰り返し計算されないように関数のプロパティを使います。
+     *   ・自己定義関数
+     *     ※関数を新しい本体で上書きして、2回目以降の呼び出しで行う作業を減らします。
+     */
+  </script>
+</body>
+</html>

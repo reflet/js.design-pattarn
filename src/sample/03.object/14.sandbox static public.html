@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.6.1 パブリックな静的メンバ</title>
+</head>
+<body>
+<script>
+  // コンストラクタ
+  var Gadget = function () {};
+
+  // 静的メソッドを追加
+  Gadget.isShiny = function () {
+    return "you bet";
+  };
+
+  // インスタンスメソッドを追加
+  Gadget.prototype.setPrice = function (price) {
+    this.price = price;
+  };
+
+  // 静的メソッドを呼ぶ
+  console.log(Gadget.isShiny());
+
+  // インスタンスメソッドを呼ぶ
+  var iPhone = new Gadget();
+  iPhone.setPrice(500);
+  console.log(iPhone);
+
+  // ----------------------------------------------------------------
+
+  // インスタンスメソッドを静的に呼び出そうとしても動作しません。
+  console.log( typeof Gadget.setPrice ); // "undefined"
+
+  // 逆にインスタンスから静的メソッドを呼び出すこともできません。
+  console.log( typeof iPhone.isShiny );  // "undefined"
+
+  // ----------------------------------------------------------------
+
+  // 静的メソッドがインスタンスメソッドで使えると便利な場合があります。
+  // プロトタイプに新しいメソッドを追加するとことで対応可能です。
+  Gadget.prototype.isShiny = Gadget.isShiny;
+  console.log( iPhone.isShiny() );
+
+  /**
+   * ただし、上記のようなやり方の場合、書きのような挙動の違いが発生します。
+   *
+   * ・ 静的メンバからisShinyを呼んだ場合、thisは、Gadgetである
+   * ・ インスタンスメンバからisShinyを呼んだ場合、thisは、iPhoneとなる
+   *
+   * 以下のコードでその挙動の違いを確認します。
+   */
+  var Gadget = function (price) {
+    this.price = price;
+  };
+
+  // 静的なメソッドを追加
+  Gadget.isShiny = function () {
+    // これは常に動作します。
+    var msg = "you bet";
+
+    if (this instanceof Gadget) {
+      // これは静的でない呼び出しの時だけ動作します。
+      msg += ", it costs $" + this.price + "!";
+    }
+
+    return msg;
+  };
+
+  // 静的メソッドをプロトタイプに追加（インスタンスメソッド化）します。
+  Gadget.prototype.isShiny = function () {
+    return Gadget.isShiny.call(this);
+  }
+
+  // 静的メソッドを呼ぶ
+  console.log( Gadget.isShiny() ); // "you bet"
+
+  // インスタンスメソッドを呼ぶ
+  var a = new Gadget('499.99');
+  console.log( a.isShiny() ); // "you bet, it costs $499.99!"
+
+</script>
+</body>
+</html>

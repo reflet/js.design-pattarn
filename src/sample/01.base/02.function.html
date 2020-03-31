@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>JavaScriptサンプル</title>
+</head>
+<body>
+  <script>
+    (function(){
+      /**
+       * コンストラクタ関数を実装
+       */
+      var Person = function (name) {
+        this.name = name;
+      };
+      Person.prototype.say = function () {
+        return 'I am ' + this.name;
+      };
+  
+      // 実行
+      var person = new Person('テスト太郎');
+      console.log(person.say());
+    })();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>7.3 イテレイター</title>
+</head>
+<body>
+<script>
+  var agg = (function () {
+    var index = 0,
+      data = [1,2,3,4,5],
+      length = data.length;
+
+    return {
+      // 次の要素を取得する
+      next: function () {
+        var element;
+        if ( ! this.hasNext()) {
+          return null;
+        }
+        element = this.current();
+        index++
+        return element;
+      },
+      // 次の要素が存在するかどうか
+      hasNext: function () {
+        return index < length;
+      },
+      // ポインタを先頭に戻す
+      rewind: function () {
+        index = 0;
+      },
+      // 現在位置の要素を返す
+      current: function () {
+        return data[index];
+      }
+    };
+  }());
+
+  // ループで、1,2,3,4,5が表示されます
+  while (agg.hasNext()) {
+    console.log( agg.next() );
+  }
+  // 先頭に戻す
+  agg.rewind();
+  console.log( agg.current() ); // "1"
+</script>
+</body>
+</html>

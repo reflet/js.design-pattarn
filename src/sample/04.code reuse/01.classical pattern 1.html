@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.3 クラシカルな継承を使ったパターンその1：デフォルトパターン</title>
+</head>
+<body>
+<script>
+  function inherit (C, P) {
+    C.prototype = new P();
+  }
+
+  // 親コンストラクタ
+  var Parent = (function(){
+    // コンストラクタ定義
+    var obj = function (name) {
+      this.name = name || 'Adam';
+    };
+
+    // プロトタイプに機能を追加
+    obj.prototype.say = function () {
+      return this.name;
+    };
+    return obj;
+  }());
+
+  // 空の子コンストラクタ
+  function Child () {}
+
+  // ここで継承の魔法がかかります
+  inherit(Child, Parent);
+
+  // 子コンストラクタ
+  var kid = new Child();
+  console.log( kid.say() ); // "Adam"
+
+  // nameプロパティを上書きしてみる
+  kid.name = 'Patrick';
+  console.log( kid.say() ); // "Patrick"
+
+  // 上書きしたnameプロパティを削除してみる
+  delete kid.name;
+  console.log( kid.say() ); // "Adam"
+</script>
+</body>
+</html>

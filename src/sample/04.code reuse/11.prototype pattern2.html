@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.10 プロパティのコピーによる継承</title>
+</head>
+<body>
+<script>
+  /**
+   * プロパティのコピーによる継承 (浅いコピー)
+   *
+   * ※第2引数のchildは省略可能です。
+   * ※拡張対象のオブジェクトを渡さない場合、新規オブジェクトが作成されて返されます。
+   *
+   * ※親のメンバーをループで順にコピーするだけの簡単な実装です。
+   * ※この実装は、オブジェクトの「浅いコピー」になります。
+   * 　浅いコピーの場合（JavaScriptではオブジェクトは参照で渡されるので）子のプロパティを変更すると、
+   * 　そのプロパティがオブジェクトだった場合、親も同様に変更されてしまいます。
+   * 　（関数もオブジェクトであり参照で渡されるので）これはメソッドに関しては好ましいですが、
+   * 　他のオブジェクトや配列に関しては困ったことになります。
+   */
+  var extend = function (parent, child) {
+    var i;
+    child = child || {};
+    for (i in parent) {
+      if (parent.hasOwnProperty(i)) {
+        child[i] = parent[i];
+      }
+    }
+    return child;
+  };
+
+  var dad = {
+    name: "Adam",
+    counts: [1, 2, 3],
+    reads: {paper: true}
+  };
+  var kid = extend(dad);
+  console.log( kid.name ); // "Adam"
+
+  kid.counts.push(4);
+  console.log( dad.counts.toString() );   // "1,2,3,4"
+  console.log( dad.reads === kid.reads ); // "true"
+
+  /**
+   * プロパティのコピーによる継承 (深いコピー)
+   *
+   * ※第2引数のchildは省略可能です。
+   * ※拡張対象のオブジェクトを渡さない場合、新規オブジェクトが作成されて返されます。
+   *
+   * ※この実装は、オブジェクトの「深いコピー」になります。
+   */
+  var extendDeep = function (parent, child) {
+    var i,
+      toStr = Object.prototype.toString,
+      astr = "[object Array]";
+    child = child || {};
+    for (i in parent) {
+      if (parent.hasOwnProperty(i)) {
+        if (typeof parent[i] === "object") {
+          child[i] = (toStr.call(parent[i]) === astr) ? [] : {};
+          extendDeep(parent[i], child[i]);
+        } else {
+          child[i] = parent[i];
+        }
+      }
+    }
+    return child;
+  };
+
+  var dad = {
+    counts: [1, 2, 3],
+    reads: {paper: true}
+  };
+  var kid = extendDeep(dad);
+  kid.counts.push(4);
+  console.log( kid.counts.toString() );   // "1,2,3,4"
+  console.log( dad.counts.toString() );   // "1,2,3"
+
+  console.log( dad.reads === kid.reads ); // "false"
+  kid.reads.paper = false;
+  kid.reads.web   = true;
+  console.log( kid.reads, dad.reads );
+</script>
+</body>
+</html>

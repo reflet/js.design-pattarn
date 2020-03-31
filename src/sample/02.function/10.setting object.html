@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>設定オブジェクト</title>
+</head>
+<body>
+  <script>
+    // 多数のパラメータを渡すのは不便です。
+    // ※ここで必須は、first, lastのみです。 => 必須かどうか分かり難い
+    function addPerson (first, last, dob, gender, address) {
+      // 何かしらの処理...
+    }
+    addPerson("Bruce", "Wayne", new Date(), null, null, "batman");
+  
+    // パラメータを一つのオブジェクトにまとめることができます。
+    // ※このパラメータをconfigurationにちなんでconfとします。
+    function addPerson (conf) {
+      // 何かしらの処理...
+    }
+    addPerson({
+      username: "batman",
+      first   : "Bruce",
+      last    : "Wayne"
+    });
+  
+    /**
+     * 設定オブジェクトのメリット・デメリット
+     *
+     * [メリット]
+     * ・パラメータの順序を覚える必要がない
+     * ・オプションのパラメータを安全に省略できる
+     * ・コードが読みやすく保守が楽になる
+     * ・パラメータの追加や削除が簡単
+     *
+     * [デメリット]
+     * ・パラメータの名前を覚える必要がある
+     * ・プロパティ名がミニファイされない
+     *
+     */
+  </script>
+</body>
+</html>

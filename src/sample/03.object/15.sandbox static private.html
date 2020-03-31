@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.6.2 プライベートな静的メンバ</title>
+</head>
+<body>
+<script>
+  var Gadget = (function () {
+    // 静的変数/プロパティ
+    var counter = 0,
+      NewGadget;
+
+    // 新しいコンストラクタを実装する
+    NewGadget = function () {
+      counter += 1;
+    };
+
+    // 特権メソッド
+    NewGadget.prototype.getLastId = function () {
+      return counter;
+    };
+
+    // コンストラクタを上書きする
+    return NewGadget;
+
+  }()); // 即座に実行する
+
+  var iPhone = new Gadget();
+  console.log( iPhone.getLastId() ); // ログ出力は1
+
+  var iPod = new Gadget();
+  console.log( iPod.getLastId() );   // ログ出力は2
+
+  var iPad = new Gadget();
+  console.log( iPad.getLastId() );   // ログ出力は3
+</script>
+</body>
+</html>

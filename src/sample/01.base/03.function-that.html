@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>JavaScriptサンプル</title>
+</head>
+<body>
+  <script>
+    (function() {
+      /**
+       * コンストラクタ関数の戻り値をthatにする
+       */
+      var ObjectMaker = function () {
+        // こっちは出力されない
+        this.name = 'This is it.';
+  
+        var that = {};
+        that.name = "And that's that.";
+        return that;
+      };
+      var o = new ObjectMaker();
+      console.log(o.name);
+  
+      /**
+       * newしてもしなくても同じ挙動になるコンストラクタ
+       * ※ただし、プロトタイプへのリンクは失われてしまうので強制newのif文を追記する。
+       */
+      function Waffle () {
+        // カスタムコンストラクタを常にnewで呼ばれた時と同じように振るまわせる
+        if (!(this instanceof Waffle)) {
+          return new Waffle();
+        }
+        this.tastes = 'yummy';
+      }
+      Waffle.prototype.wantAnother = true;
+      var first  = new Waffle(),
+        second = Waffle();
+      console.log(
+        first.tastes,      // 'yummy'
+        second.tastes,     // 'yummy'
+        first.wantAnother, // true
+        second.wantAnother // true
+      );
+    })();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.8 Klass</title>
+</head>
+<body>
+<script>
+  /**
+   * コンストラクタ関数のnewの際に動的な配列を引数として渡す
+   */
+  var applyConstructor = function(Self, args){
+    // ES5で定義されたFunction.prototype.bindを使う場合
+    // ※ただし、ちょっと古い iOS や Android、IE8では使えないみたい...
+    var func1 = function (Self, args){
+      return new (Self.bind.apply(Self, [null].concat(Array.prototype.slice.call(args))));
+    };
+
+    // プロトタイプを空のコンストラクタに付け替える方法
+    // ※ただし、組み込みクラスで使えなかったりするらしい...
+    var func2 = function (Self, args){
+      var instance, Dummy = function () {};
+      Dummy.prototype = Self.prototype;
+      instance = new Dummy();
+      Self.apply(instance, args);
+      return instance;
+    };
+
+    // evalする方法 ※一番汎用的みたい...
+    var func3 = function (Self, args) {
+      var cache = {}, len = (args != null && args.length) || 0;
+      var generate = function (len) {
+        var i, a = [];
+        for (i = 0; i < len; i++) { a.push('args[' + i + ']'); }
+        return Function('Dummy', 'args', 'return new Dummy(' + a.join(',') + ')');
+      }
+      return (cache[len] || (cache[len] = generate(len)))(Self, args);
+    }
+    return func3(Self, args);
+  };
+
+  /**
+   * クラス作成メソッド
+   */
+  var klass = function (Parent, className, props) {
+    var Child, F, i;
+
+    // 1.コンストラクタ
+    Child = function () {
+      // この関数がコンストラクタとして呼ばれたか確認します。
+      if ( ! (this instanceof Child)) {
+        return applyConstructor(Child, arguments);
+      }
+
+      // コンストラクタ自動実行
+      if (Child.prototype.hasOwnProperty("__construct")) {
+        // 自コンストラクタ
+        Child.prototype.__construct.apply(this, arguments);
+      } else if (Child.uber && Child.uber.hasOwnProperty("__construct")) {
+        // 親コンストラクタ
+        Child.uber.__construct.apply(this, arguments);
+      }
+    };
+
+    // 2.継承
+    Parent = Parent || Object;
+    F = function () {};
+    Child.uber = F.prototype = Parent.prototype;
+    Child.prototype = new F();
+    Child.prototype.constructor = Child;
+    Child.prototype.class = className;
+
+    // 3.システム共通定数を追加
+    Child.CLASS = className;
+
+    // 4.実装したメソッドを追加
+    for (i in props) {
+      if (props.hasOwnProperty(i)) {
+        Child.prototype[i] = props[i];
+      }
+    }
+
+    //「クラス」を返す
+    return Child;
+  };
+
+  /**
+   * Manクラス
+   */
+  var Man = klass(null, 'Man', {
+    __construct: function (whatName) {
+      // 定数宣言
+      this.CONST1 = 'aaaaa';
+      this.CONST2 = 'bbbbb';
+
+      // コンストラクタでの処理
+      this.name = whatName;
+      console.log(Man.CLASS + "'s constructor");
+    },
+    getName: function () {
+      return this.name;
+    },
+    getClassName: function () {
+      return this.class + 'Class';
+    }
+  });
+  var man = Man('Adam');        // ログに"Man's constructor”と表示される
+  console.log( man.getName() );     // "Adam"
+  console.log( man.getClassName()); // "ManClass"
+  console.log( man );
+  console.log( '--------------' );
+
+  /**
+   * ManClarkクラス
+   */
+  var ManClark = klass(Man, 'ManClark', {
+    __construct: function (whatName) {
+      // 定数宣言
+      this.CONST3 = 'ccccc';
+      this.CONST4 = 'ddddd';
+
+      // 親コンストラクタを実行
+      ManClark.uber.__construct.apply(this, arguments);
+
+      // コンストラクタでの処理
+      console.log(ManClark.CLASS + "'s constructor");
+    },
+    getName: function () {
+      // 親メソッドを実行
+      var name = ManClark.uber.getName.call(this);
+      return "I am " + name + '.';
+    }
+  });
+  var clark = ManClark('Clark Kent'); // ログに"Man's constructor”と"ManClark's constructor"と表示される
+  console.log( clark.getName() );         // "I am Clark Kent"
+  console.log( clark.getClassName());     // "ManClarkClass"
+  console.log( clark );
+  console.log( '--------------' );
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.8 連鎖パターン</title>
+</head>
+<body>
+<script>
+  var obj = {
+    value: 1,
+    increment: function () {
+      this.value += 1;
+      return this;
+    },
+    add: function (v) {
+      this.value += v;
+      return this;
+    },
+    shout: function () {
+      alert(this.value);
+    }
+  };
+
+  // メソッドをひとつずつ呼び出す
+  obj.increment();
+  obj.add(3);
+  obj.shout(); // "5"
+
+  /**
+   * チェーンメソッド
+   *
+   * ※利点：タイピングの量が節約される ＆ 文章のように読める簡潔なコードを作れる
+   * ※欠点：デバッグが難しくなる -> エラーの発生行はわかってもどのメソッドがエラーか解り難くなる
+   */
+  obj.increment()
+    .add(3)
+    .shout();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.6 クラシカルなパターンその4：プロトタイプを共有する</title>
+</head>
+<body>
+<script>
+  // プロトタイプは継承できているが固有のプロパティが継承できていない
+  function inherit (C, P) {
+    C.prototype = P.prototype;
+  }
+</script>
+</body>
+</html>

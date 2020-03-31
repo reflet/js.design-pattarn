@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>正規表現</title>
+</head>
+<body>
+  <script>
+    // 改行・タブなどの記述
+    console.log("a\nb\tc\r\nd\n");
+  
+    /**
+     * 正規表現リテラルの構文
+     *
+     * g: グローバル検索
+     * m: マルチ（複数）行
+     * i: 大文字と小文字を区別しない
+     *
+     * var re = /正規表現パターン/gmi
+     */
+    var re = /\\/gm;
+    console.log("abc123\\XYZ".replace(re, ""));
+  
+    /**
+     * コンストラクタ
+     *
+     * ※RegExpを使う
+     * ※エスケープ処理が必要なブラウザもあるのかな？（ / であれば二重にエスケープが必要となる)
+     */
+    var reg = new RegExp("\\\\", "gm");
+    console.log("abc123\\XYZ".replace(reg, ""));
+  
+    /**
+     * 正規表現リテラルの場合は、オブジェクトが作成されるのは構文解析の段階で１回とのこと
+     * そのため、下記のようなオブジェクトを返す関数では、同じオブジェクト（同一）が返されるブラウザもあるようです。
+     *
+     * ※ただし、ES5でこの振る舞いは変更され、リテラルでも新しいオブジェクトが作られるようになったらしい。
+     * ※この振る舞いは、多くのブラウザ環境で修正されているが、そうでない環境もあるので注意が必要。
+     *
+     */
+    function getRE() {
+      // var re = /[a-z]/gi;
+      var re = RegExp("[a-z]", "gi");
+      re.foo = "bar";
+      return re;
+    }
+    var re1 = getRE(), re2 = getRE();
+    re1.foo = "baz";
+    console.log(re1 === re2, re1.foo, re2.foo, "abc123XYZ".replace(re1, '*'));
+  </script>
+</body>
+</html>

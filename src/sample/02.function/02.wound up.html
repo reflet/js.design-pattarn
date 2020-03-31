@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>関数の巻き上げ</title>
+</head>
+<body>
+  <script>
+    // アンチパターン
+    // あくまで説明用です。
+  
+    // グローバル関数
+    function foo() {
+      alert('global foo');
+    }
+    function bar() {
+      alert('global bar');
+    }
+  
+    /**
+     * 関数宣言を使うとその関数の宣言だけでなくその定義も巻き上げられるので注意が必要。
+     * ※変数は宣言のみ巻き上げられる。
+     */
+    function hoistMe() {
+      console.log(typeof foo); // "function"
+      console.log(typeof bar); // "undefined"
+  
+      foo(); // "local foo"
+      bar(); // "TypeError: bar is not a function"
+  
+      // 関数宣言
+      // ※変数fooとその実装が巻き上げられる
+      function foo() {
+        alert("local foo");
+      }
+  
+      // 関数式
+      // ※変数宣言のみ巻き上げられ、関数式は巻き上げられない。
+      var bar = function() {
+        alert("local bar");
+      };
+    }
+    hoistMe();
+  </script>
+</body>
+</html>

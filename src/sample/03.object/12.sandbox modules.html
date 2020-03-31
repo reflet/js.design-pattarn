@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.5.2 サンドボックス モジュール追加</title>
+</head>
+<body>
+<script>
+  // サンドボックスパターンのコンストラクタ
+  function Sandbox () {
+
+  }
+
+  /**
+   * サンドボックスのコンストラクタにモジュールを追加する例を記載します。
+   * ※ここの例では、dom, event, ajaxという３つのモジュールを追加しています。
+   */
+  Sandbox.modules = {};
+
+  Sandbox.modules.dom = function (box) {
+    box.getElement = function () {};
+    box.getStyle = function () {};
+    box.foo = "bar";
+  };
+
+  Sandbox.modules.event = function (box) {
+    // 必要ならSandboxのプロトタイプにアクセスできます
+    // box.constructor.prototype.m = "mm";
+    box.attachEvent = function () {};
+    box.dettachEvent = function () {};
+  };
+
+  Sandbox.modules.ajax = function (box) {
+    box.makeRequest = function () {};
+    box.getResponse = function () {};
+  }
+
+  console.log(Sandbox.modules);
+</script>
+</body>
+</html>

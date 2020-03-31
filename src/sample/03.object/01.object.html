@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.1 オブジェクト - 名前空間</title>
+</head>
+<body>
+<script>
+  // グローバルオブジェクト
+  var myApp = {};
+
+  // コンストラクタ
+  myApp.Parent = function () {};
+  myApp.Child  = function () {};
+
+  // 変数
+  myApp.some_var = 1;
+
+  // オブジェクトのコンテナ
+  myApp.modules = {};
+
+  // 入れ子になったオブジェクト
+  myApp.modules.module1 = {};
+  myApp.modules.module1.data = {a:1, b:2};
+  myApp.modules.module2 = {};
+
+  /**
+   * 名前空間を使う利点
+   * ・コード内での名前の衝突を避ける
+   * ・サードパーティのコード、例えばJavaScriptライブラリやウィジェットとの名前の衝突を避ける
+   *
+   * 名前空間を使う欠点
+   * ・タイピングの量が少し増える
+   *  ※変数や関数ごとに接頭辞が付くのでダウンロードするコードのサイズが大きくなる
+   * ・グローバルのインスタンスがひとつだけということは、コードの一部を変更すると
+   *   グローバルのインスタンスが変更されたことを意味します。
+   * ・入れ子が深い名前は、それだけプロパティの解決に時間がかかることを意味します。
+   */
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>7.1 シングルトン</title>
+</head>
+<body>
+<script>
+  /**
+   * -------------------------------------------------------------------------------
+   * シングルトンの例1
+   * -------------------------------------------------------------------------------
+   */
+  function Universe1 () {
+    // インスタンスのキャッシュ
+    var instance;
+
+    // コンストラクタを書き換える
+    Universe1 = function Universe1 () {
+      return instance;
+    };
+
+    // プロトタイププロパティを引き継ぐ
+    Universe1.prototype = this;
+
+    // インスタンス生成
+    instance = new Universe1();
+
+    // コンストラクタのポインタを再設定
+    instance.constructor = Universe1;
+
+    // 機能のすべて
+    instance.start_time = 0;
+    instance.bang = "Big";
+
+    return instance;
+  }
+
+  Universe1.prototype.nothing = true;
+  var uni = new Universe1();
+
+  Universe1.prototype.everything = true;
+  var uni2 = new Universe1();
+
+  // 同じひとつのインスタンスかどうか
+  console.log( uni === uni2 ); // "true"
+
+  // プロトタイプはすべて定義された時点ですぐに機能します
+  console.log( uni.nothing && uni.everything && uni2.nothing && uni2.everything ); // "true"
+
+  // 通常のプロパティ
+  console.log( uni.bang ); // "Big"
+
+  // コンストラクタのポインタも正しい
+  console.log( uni.constructor === Universe1 ); // "true"
+
+  console.log( '-------------------------------------' );
+
+
+  /**
+   * -------------------------------------------------------------------------------
+   * シングルトンの例2
+   * -------------------------------------------------------------------------------
+   */
+  var Universe2;
+  (function () {
+    var instance;
+    Universe2 = function Universe2 () {
+      if (instance) {
+        return instance;
+      }
+      instance = this;
+      this.start_time = 0;
+      this.bang = "Big";
+    };
+  }());
+
+  Universe2.prototype.nothing = true;
+  var uni = new Universe2();
+
+  Universe2.prototype.everything = true;
+  var uni2 = new Universe2();
+
+  // 同じひとつのインスタンスかどうか
+  console.log( uni === uni2 ); // "true"
+
+  // プロトタイプはすべて定義された時点ですぐに機能します
+  console.log( uni.nothing && uni.everything && uni2.nothing && uni2.everything ); // "true"
+
+  // 通常のプロパティ
+  console.log( uni.bang ); // "Big"
+
+  // コンストラクタのポインタも正しい
+  console.log( uni.constructor === Universe2 ); // "true"
+
+  console.log( '-------------------------------------' );
+
+  /**
+   * -------------------------------------------------------------------------------
+   * シングルトンの例３
+   * -------------------------------------------------------------------------------
+   */
+  var Universe3 = (function () {
+    var instance;
+    return function () {
+      if (instance) {
+        return instance;
+      }
+      instance = this;
+      this.start_time = 0;
+      this.bang = "Big";
+    };
+  }());
+
+  Universe3.prototype.nothing = true;
+  var uni = new Universe3();
+
+  Universe3.prototype.everything = true;
+  var uni2 = new Universe3();
+
+  // 同じひとつのインスタンスかどうか
+  console.log( uni === uni2 ); // "true"
+
+  // プロトタイプはすべて定義された時点ですぐに機能します
+  console.log( uni.nothing && uni.everything && uni2.nothing && uni2.everything ); // "true"
+
+  // 通常のプロパティ
+  console.log( uni.bang ); // "Big"
+
+  // コンストラクタのポインタも正しい
+  console.log( uni.constructor === Universe3 ); // "true"
+
+  console.log( '-------------------------------------' );
+</script>
+</body>
+</html>

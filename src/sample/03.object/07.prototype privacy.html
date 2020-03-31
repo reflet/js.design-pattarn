@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>5.3.5 プロトタイプとプライバシー</title>
+</head>
+<body>
+<script>
+  /**
+   * コンストラクタを使ってプライベートメンバを実現するとき、コンストラクタを呼んで
+   * 新しいオブジェクトを作るたびに毎回プライベートメンバが作成されてしまうのが欠点。
+   *
+   * 処理の重複と余計なメモリを避けるには、共通するプロパティとメソッドをコンストラクタの
+   * prototypeプロパティに追加すれば良いです。
+   */
+  function Gadget () {
+    // プライベートメンバ
+    var name = "iPod";
+
+    // パブリックメンバ
+    this.getName = function () {
+      return name;
+    };
+  }
+  Gadget.prototype = (function () {
+    // プライベートメンバ
+    var browser = "Mobile Webkit";
+
+    // prototypeにあるパブリックメンバ
+    return {
+      getBrowser: function () {
+        return browser;
+      }
+    };
+  }());
+
+  var toy = new Gadget();
+  console.log(toy.getName()); // "iPod" ※特権メソッド
+  console.log(toy.getBrowser()); // "Mobile Webkit" ※prototypeにある特権メソッド
+</script>
+</body>
+</html>

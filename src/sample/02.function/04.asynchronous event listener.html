@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>非同期イベントリスナー</title>
+</head>
+<body>
+  <script>
+    // ドキュメントをクリックした時に発生する処理をコールバックで指定している
+    document.addEventListener("click", console.log, false);
+  
+    // タイムアウトもコールバックを受け付ける
+    var thePlotThinkens = function () {
+      console.log("500ミリ秒後...");
+    }
+    setTimeout(thePlotThinkens, 500);
+  </script>
+</body>
+</html>

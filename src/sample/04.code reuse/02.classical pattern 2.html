@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.4 クラシカルなパターンその2：コンストラクタ拝借</title>
+</head>
+<body>
+<script>
+  function inherit (C, P) {
+    C.prototype = new P();
+  }
+
+  // 親コンストラクタ
+  function Article () {
+    this.tags = ['js', 'css'];
+  }
+  var article = new Article();
+
+  // 子コンストラクタ ( デフォルトパターン )
+  function BlogPost () {}
+  // BlogPost.prototype = article;
+  inherit(BlogPost, Article);
+  var blog = new BlogPost();
+
+  // 子コンストラクタ ( 拝借パターン )
+  function StaticPage () {
+    Article.call(this);
+  }
+  var page = new StaticPage();
+
+  // tagsプロパティの存在チェック
+  console.log(
+    article.hasOwnProperty('tags'), // "true"
+    blog.hasOwnProperty('tags'),    // "false" 固有のプロパティとしては持っていない
+    page.hasOwnProperty('tags')     // "true"
+  );
+
+  // tagsプロパティに追加
+  article.tags.push('pl');
+  blog.tags.push('html'); // プロトタイプを通してArticleのtagsプロパティへアクセスできる
+  page.tags.push('php');
+  console.log(
+    article.tags,
+    blog.tags,
+    page.tags
+  );
+</script>
+</body>
+</html>

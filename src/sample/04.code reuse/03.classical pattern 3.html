@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>6.4.1 プロトタイプ連鎖</title>
+</head>
+<body>
+<script>
+  // 親コンストラクタ
+  function Parent (name) {
+    this.name = name || 'Adam';
+  }
+  Parent.prototype.say = function () {
+    return this.name;
+  }
+
+  // 子コンストラクタ
+  function Child(name) {
+    // 親の固有プロパティを子の固有プロパティにコピーしているだけ
+    // ※プロトタイプはコピーされない
+    Parent.apply(this, arguments);
+  }
+  var kid = new Child('Patrick');
+  console.log( kid.name );       // "Patrick"
+  console.log( typeof kid.say ); // "undefined"
+</script>
+</body>
+</html>
